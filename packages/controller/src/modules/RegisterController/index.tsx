@@ -10,7 +10,7 @@ export interface Props {
   ) => JSX.Element | null;
 }
 
-export class C extends React.PureComponent<ChildMutateProps<Props, RegisterMutation, RegisterMutationVariables> > {
+export class C1 extends React.PureComponent<ChildMutateProps<Props, RegisterMutation, RegisterMutationVariables> > {
   submit = async (values: RegisterMutationVariables) => {
     console.log(values);
     await this.props.mutate({
@@ -38,4 +38,4 @@ export const RegisterController = graphql<
   RegisterMutation,
   RegisterMutationVariables
   >
-(registerMutation)(C);
+(registerMutation)(C1);
