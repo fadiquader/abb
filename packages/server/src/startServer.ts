@@ -2,6 +2,7 @@ import "reflect-metadata";
 // tslint:disable-next-line:no-var-requires
 require("dotenv-safe").config();
 import { GraphQLServer } from "graphql-yoga";
+import * as express  from "express";
 import * as session from "express-session";
 import * as connectRedis from "connect-redis";
 import * as RateLimit from "express-rate-limit";
@@ -63,6 +64,7 @@ export const startServer = async () => {
       }
     } as any)
   );
+  server.express.use('/images', express.static('images'))
   const cors = {
     credentials: true,
     origin:

@@ -4,9 +4,10 @@ import * as shortid from 'shortid'
 import { ResolverMap } from "../../../types/graphql-utils";
 import { Listing } from "../../../entity/Listing";
 
-const storeUpload = async ({ stream }: any): Promise<any> => {
+const storeUpload = async ({ stream, mimetype }: any): Promise<any> => {
   const id = shortid.generate();
-  const path = `images/${id}`;
+  const ext = mimetype.split('/')[1];
+  const path = `images/${id}.${ext}`;
 
   return new Promise((resolve, reject) =>
     stream
@@ -17,8 +18,8 @@ const storeUpload = async ({ stream }: any): Promise<any> => {
 }
 
 const processUpload = async (upload: any) => {
-  const { stream, filename } = await upload
-  const { id } = await storeUpload({ stream, filename })
+  const { stream, mimetype } = await upload;
+  const { id } = await storeUpload({ stream, mimetype });
   return id
 }
 
@@ -26,7 +27,7 @@ export const resolvers: ResolverMap = {
   Mutation: {
     createListing: async (_, { input: { picture, ...data} }, { session }) => {
       console.log(session);
-      const pictureUrl = await processUpload(picture)
+      const pictureUrl = picture ? await processUpload(picture) : '';
       await Listing.create({
         ...data,
         pictureUrl,
