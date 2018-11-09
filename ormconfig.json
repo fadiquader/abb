@@ -21,7 +21,7 @@
     "username": "postgres",
     "password": "",
     "database": "graphql-ts-server",
-    "synchronize": true,
+    "synchronize": false,
     "logging": true,
     "entities": ["src/entity/**/*.ts"],
     "migrations": ["src/migration/**/*.ts"],

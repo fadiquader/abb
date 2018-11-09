@@ -5,7 +5,7 @@ import { ResolverMap } from "../../../types/graphql-utils";
 import { User } from "../../../entity/User";
 import {
   invalidLogin,
-  confirmEmailError,
+  // confirmEmailError,
   forgotPasswordLockedError
 } from "./errorMessages";
 import { userSessionIdPrefix } from "../../../constants";
@@ -18,6 +18,9 @@ const errorResponse = [
 ];
 
 export const resolvers: ResolverMap = {
+  Query: {
+    dummyLogin: () => '',
+  },
   Mutation: {
     login: async (
       _,
@@ -30,16 +33,16 @@ export const resolvers: ResolverMap = {
         return {errors: errorResponse};
       }
 
-      if (!user.confirmed) {
-        return {
-          errors: [
-            {
-              path: "email",
-              message: confirmEmailError
-            }
-          ]
-        };
-      }
+      // if (!user.confirmed) {
+      //   return {
+      //     errors: [
+      //       {
+      //         path: "email",
+      //         message: confirmEmailError
+      //       }
+      //     ]
+      //   };
+      // }
 
       if (user.forgotPasswordLocked) {
         return {

@@ -1,73 +1,39 @@
-
-import * as bcrypt from "bcryptjs";
-
+import { createWriteStream } from 'fs'
+import * as shortid from 'shortid'
+//
 import { ResolverMap } from "../../../types/graphql-utils";
-import { User } from "../../../entity/User";
-import {
-  invalidLogin,
-  confirmEmailError,
-  forgotPasswordLockedError
-} from "./errorMessages";
-import { userSessionIdPrefix } from "../../../constants";
+import { Listing } from "../../../entity/Listing";
 
-const errorResponse = [
-  {
-    path: "email",
-    message: invalidLogin
-  }
-];
+const storeUpload = async ({ stream }: any): Promise<any> => {
+  const id = shortid.generate();
+  const path = `images/${id}`;
+
+  return new Promise((resolve, reject) =>
+    stream
+      .pipe(createWriteStream(path))
+      .on('finish', () => resolve({ id, path }))
+      .on('error', reject),
+  )
+}
+
+const processUpload = async (upload: any) => {
+  const { stream, filename } = await upload
+  const { id } = await storeUpload({ stream, filename })
+  return id
+}
 
 export const resolvers: ResolverMap = {
-  Query: {
-    dummyLogin: () => '',
-  },
   Mutation: {
-    login: async (
-      _,
-      {email, password},
-      {session, redis, req}
-    ) => {
-      const user = await User.findOne({where: {email}});
+    createListing: async (_, { input: { picture, ...data} }, { session }) => {
+      console.log(session);
+      const pictureUrl = await processUpload(picture)
+      await Listing.create({
+        ...data,
+        pictureUrl,
+        userId: session.userId
+      }).save();
 
-      if (!user) {
-        return {errors: errorResponse};
-      }
-
-      if (!user.confirmed) {
-        return {
-          errors: [
-            {
-              path: "email",
-              message: confirmEmailError
-            }
-          ]
-        };
-      }
-
-      if (user.forgotPasswordLocked) {
-        return {
-          errors: [
-            {
-              path: "email",
-              message: forgotPasswordLockedError
-            }
-          ]
-        };
-      }
-
-      const valid = await bcrypt.compare(password, user.password);
-
-      if (!valid) {
-        return {errors: errorResponse};
-      }
-
-      // login sucessful
-      session.userId = user.id;
-      if (req.sessionID) {
-        await redis.lpush(`${userSessionIdPrefix}${user.id}`, req.sessionID);
-      }
-
-      return {sessionId: req.sessionID};
+      return true;
     }
   }
 }

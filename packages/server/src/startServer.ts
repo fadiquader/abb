@@ -6,6 +6,7 @@ import * as session from "express-session";
 import * as connectRedis from "connect-redis";
 import * as RateLimit from "express-rate-limit";
 import * as RateLimitRedisStore from "rate-limit-redis";
+import { applyMiddleware } from 'graphql-middleware';
 // -----------------------------
 import { redis } from "./redis";
 import { createTypeormConn } from "./utils/createTypeormConn";
@@ -13,6 +14,7 @@ import { confirmEmail } from "./routes/confirmEmail";
 import { genSchema } from "./utils/genSchema";
 import { redisSessionPrefix } from "./constants";
 import {createTestConn} from "./testUtils/createTestConn";
+import { middlewareShield } from './shield';
 
 const SESSION_SECRET = "ajslkjalksjdfkl";
 
@@ -23,8 +25,10 @@ export const startServer = async () => {
   if (process.env.NODE_ENV === "test") {
     await redis.flushall();
   }
+  const schema =  genSchema() as any;
+  applyMiddleware(schema, middlewareShield);
   const server = new GraphQLServer({
-    schema: genSchema() as any,
+    schema: schema,
     context: ({ request }) => ({
       redis,
       url: request.protocol + "://" + request.get("host"),
@@ -71,7 +75,8 @@ export const startServer = async () => {
   if (process.env.NODE_ENV === "test") {
     await createTestConn(true);
   } else {
-    await createTypeormConn();
+    const conn = await createTypeormConn();
+    await conn.runMigrations();
   }
   const port = process.env.NODE_ENV === "test" ? 0 : 4000;
   const app = await server.start({

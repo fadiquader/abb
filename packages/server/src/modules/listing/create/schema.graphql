@@ -1,11 +1,26 @@
-type LoginResponse {
-  errors: [Error!]
-  sessionId: String
+scalar Upload
+
+type File {
+  id: ID!
+  path: String!
+  filename: String!
+  mimetype: String!
+  encoding: String!
 }
 
-type Query {
-  dummyLogin: String
+input CreateListingInput {
+  name: String!
+  picture: Upload,
+  category: String!
+  description: String!
+  price: Int!
+  beds: Int!
+  guests: Int!
+  latitude: Float!
+  longitude: Float!
+  amenities: [String!]!
 }
+
 type Mutation {
-  login(email: String!, password: String!): LoginResponse!
+  createListing(input: CreateListingInput!): Boolean!
 }

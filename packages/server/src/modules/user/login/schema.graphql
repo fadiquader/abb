@@ -3,6 +3,9 @@ type LoginResponse {
   sessionId: String
 }
 
+type Query {
+  dummyLogin: String
+}
 type Mutation {
   login(email: String!, password: String!): LoginResponse!
 }

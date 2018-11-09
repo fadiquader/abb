@@ -1,34 +1,42 @@
-import * as bcrypt from "bcryptjs";
 import {
   Entity,
   Column,
   BaseEntity,
   PrimaryGeneratedColumn,
-  BeforeInsert
+  ManyToOne
 } from "typeorm";
+import {User} from "./User";
 
-@Entity("users")
-export class User extends BaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
+@Entity("listings")
+export class Listing extends BaseEntity {
+  @PrimaryGeneratedColumn("uuid") id: string;
 
-  @Column("varchar", {length: 255})
-  firstName: string;
+  @Column("varchar", { length: 100 })
+  name: string;
 
-  @Column("varchar", {length: 255})
-  email: string;
+  @Column("varchar", { length: 100 })
+  category: string;
 
-  @Column("varchar", {length: 255})
-  password: string;
+  @Column("text") pictureUrl: string;
 
-  @Column("boolean", {default: false})
-  confirmed: boolean;
+  @Column("varchar", { length: 255 })
+  description: string;
 
-  @Column("boolean", {default: false})
-  forgotPasswordLocked: boolean;
+  @Column("int") price: number;
 
-  @BeforeInsert()
-  async hashPasswordBeforeInsert() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
+  @Column("int") beds: number;
+
+  @Column("int") guests: number;
+
+  @Column("double precision") latitude: number;
+
+  @Column("double precision") longitude: number;
+
+  @Column("text", { array: true })
+  amenities: string[];
+
+  @Column("uuid") userId: string;
+
+  @ManyToOne(() => User, user => user.listings)
+  user: User;
 }

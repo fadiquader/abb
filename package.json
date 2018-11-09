@@ -2,7 +2,13 @@
   "private": true,
   "scripts": {
     "build:server": "lerna run build --scope={@abb/common,@abb/server}",
-    "build:web": "lerna run build --scope={@abb/common,@abb/web}"
+    "build:web": "lerna run build --scope={@abb/common,@abb/web}",
+    "native:start": "cd packages/mobile && node link-workspaces.js && node node_modules/react-native/local-cli/cli.js start --config ../../../../packages/mobile/rn-cli-config.js --reset-cache",
+    "native:ios": "cd packages/mobile && react-native run-ios",
+    "native:android": "cd packages/mobile && react-native run-android",
+    "packages:clean": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "test:watch": "jest --watchAll --notify",
+    "test:coverage": "npm run test -- --coverage=true"
   },
   "workspaces": {
     "packages": [
@@ -10,7 +16,15 @@
     ],
     "nohoist": [
       "**/rimraf",
-      "**/rimraf/**"
+      "**/rimraf/**",
+      "**/react-native",
+      "**/react-native/**",
+      "**/expo",
+      "**/expo/**",
+      "**/react-native-typescript-transformer",
+      "**/react-native-typescript-transformer/**",
+      "**/metro-bundler-config-yarn-workspaces",
+      "**/metro-bundler-config-yarn-workspaces/**"
     ]
   },
   "name": "abb",
