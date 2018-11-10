@@ -16,6 +16,8 @@ import { genSchema } from "./utils/genSchema";
 import { redisSessionPrefix } from "./constants";
 import {createTestConn} from "./testUtils/createTestConn";
 import { middlewareShield } from './shield';
+import { userLoader } from './loaders/userLoader';
+//
 
 const SESSION_SECRET = "ajslkjalksjdfkl";
 
@@ -30,11 +32,13 @@ export const startServer = async () => {
   applyMiddleware(schema, middlewareShield);
   const server = new GraphQLServer({
     schema: schema,
-    context: ({ request }) => ({
+    context: ({ request, response }) => ({
       redis,
       url: request.protocol + "://" + request.get("host"),
       session: request.session,
-      req: request
+      req: request,
+      res: response,
+      userLoader: userLoader(),
     })
   });
   server.express.use(

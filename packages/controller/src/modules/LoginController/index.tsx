@@ -1,6 +1,10 @@
 import * as React from "react";
 import gql from "graphql-tag";
-import {ChildMutateProps, graphql} from "react-apollo";
+import {
+  ChildMutateProps,
+  graphql, withApollo,
+  WithApolloClient
+} from "react-apollo";
 //
 import {LoginMutation, LoginMutationVariables} from './__generated__/LoginMutation'
 import { normalizeErrors } from '../../utils/normalizeErrors';
@@ -11,15 +15,20 @@ interface Props {
   ) => JSX.Element | null;
 }
 
-class C2 extends React.PureComponent<ChildMutateProps<Props, LoginMutation, LoginMutationVariables> > {
+class C2 extends React.PureComponent<ChildMutateProps<
+  WithApolloClient<Props>,
+  LoginMutation,
+  LoginMutationVariables
+  >> {
   submit = async (values: any) => {
     console.log(values);
     const { data: { login } } = await this.props.mutate({
       variables: values
     }) as any;
-    if(login) {
+    if(login && login.errors) {
       return normalizeErrors(login.errors)
     }
+    await this.props.client.resetStore();
     return null;
   };
 
@@ -44,5 +53,4 @@ export const LoginController = graphql<
   Props,
   LoginMutation,
   LoginMutationVariables
-  >
-(loginMutation)(C2);
+  >(loginMutation)(withApollo<Props>(C2 as any));
