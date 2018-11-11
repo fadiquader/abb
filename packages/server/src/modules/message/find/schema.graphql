@@ -1,0 +1,11 @@
+type Message {
+  id: String!
+  text: String!
+  userId: String!
+  listingId: String!
+  user: User!
+}
+
+type Query {
+  messages(listingId: String!): [Message]!
+}

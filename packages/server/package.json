@@ -43,6 +43,7 @@
     "graphql": "^14.0.2",
     "graphql-import": "^0.7.1",
     "graphql-middleware": "^2.0.2",
+    "graphql-redis-subscriptions": "^2.0.0",
     "graphql-shield": "^4.1.0",
     "graphql-tools": "^4.0.2",
     "graphql-yoga": "^1.16.7",

@@ -1,0 +1,4 @@
+
+type Subscription {
+  newMessage(listingId: String!): Message!
+}

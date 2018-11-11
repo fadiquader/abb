@@ -11,7 +11,8 @@ export interface Context {
   session: Session;
   req: Express.Request;
   res: Express.Response;
-  userLoader: ReturnType<typeof userLoader>
+  userLoader: ReturnType<typeof userLoader>,
+  pubsub: any
 }
 
 export type Resolver = (
@@ -31,6 +32,6 @@ export type GraphQLMiddlewareFunc = (
 
 export interface ResolverMap {
   [key: string]: {
-    [key: string]: Resolver;
+    [key: string]: Resolver | {[key: string]: Resolver};
   };
 }
